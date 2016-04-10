@@ -14,7 +14,7 @@ exports.uuid = function () {
 };
 
 exports.datelog = function (s) {
-  console.log((new Date()) + ' ' + s);
+  //console.log((new Date()) + ' ' + s);
 };
 
 exports.sendConsole = function (s) {
@@ -22,7 +22,7 @@ exports.sendConsole = function (s) {
     return false;
   }
   Global.console.sendUTF(s);
-  console.log("sending " + s + " to console");
+  //console.log("sending " + s + " to console");
 };
 
 exports.arraysEqual = function (a1, a2) {

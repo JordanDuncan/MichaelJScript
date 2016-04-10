@@ -21,16 +21,14 @@ User.prototype.set_sprite = function (num) {
 };
 
 User.prototype.set_name = function (name) {
-  console.log("setting user with UUID " + this.uuid + " info");
   this.name = name;
-  console.log("setting name to " + name);
+  console.log(("[NAME] " + this.uuid + " is " + name).cyan);
 
   this.set_location();
 };
 
 User.prototype.set_job = function (job) {
   this.job = job;
-  console.log("setting user " + this.uuid + " to job " + this.job);
 };
 
 User.prototype.set_location = function () {
@@ -74,13 +72,14 @@ User.prototype.move = function (direction) {
         for (i = 0; i < Global.powerup.length; i++) {
           if (utils.arraysEqual(Global.powerup[i], this.location)) {
             this.powerup(Global.poweruptype[i]);
+            console.log(('[PWUP] ' + this.name + 'got a ' + Global.poweruptype[i]).magenta);
             Global.powerup.splice(i, 1);
             Global.poweruptype.splice(i, 1);
             Global.console.sendUTF(JSON.stringify({"type": "deletePowerup",
                                                    "location": this.location}));
           }
         }
-        console.log("moving up");
+        //console.log("[MOVE] " + this.name + " UP");
         utils.sendConsole(JSON.stringify({"uuid": this.uuid,
                                           "move": direction,
                                           "top": this.location[1],
@@ -98,13 +97,14 @@ User.prototype.move = function (direction) {
         for (i = 0; i < Global.powerup.length; i++) {
           if (utils.arraysEqual(Global.powerup[i], this.location)) {
             this.powerup(Global.poweruptype[i]);
+            console.log(('[PWUP] ' + this.name + 'got a ' + Global.poweruptype[i]).magenta);
             Global.powerup.splice(i, 1);
             Global.poweruptype.splice(i, 1);
             Global.console.sendUTF(JSON.stringify({"type": "deletePowerup",
                                                    "location": this.location}));
           }
         }
-        console.log("moving down");
+        //console.log("[MOVE] " + this.name + " DOWN");
         utils.sendConsole(JSON.stringify({"uuid": this.uuid,
                                           "move": direction,
                                           "top": this.location[1],
@@ -122,13 +122,14 @@ User.prototype.move = function (direction) {
         for (i = 0; i < Global.powerup.length; i++) {
           if (utils.arraysEqual(Global.powerup[i], this.location)) {
             this.powerup(Global.poweruptype[i]);
+            console.log(('[PWUP] ' + this.name + 'got a ' + Global.poweruptype[i]).magenta);
             Global.powerup.splice(i, 1);
             Global.poweruptype.splice(i, 1);
             Global.console.sendUTF(JSON.stringify({"type": "deletePowerup",
                                                    "location": this.location}));
           }
         }
-        console.log("moving left");
+        //console.log("[MOVE] " + this.name + " LEFT");
         utils.sendConsole(JSON.stringify({"uuid": this.uuid,
                                           "move": direction,
                                           "top": this.location[1],
@@ -146,13 +147,14 @@ User.prototype.move = function (direction) {
         for (i = 0; i < Global.powerup.length; i++) {
           if (utils.arraysEqual(Global.powerup[i], this.location)) {
             this.powerup(Global.poweruptype[i]);
+            console.log(('[PWUP] ' + this.name + 'got a ' + Global.poweruptype[i]).magenta);
             Global.powerup.splice(i, 1);
             Global.poweruptype.splice(i, 1);
             Global.console.sendUTF(JSON.stringify({"type": "deletePowerup",
                                                    "location": this.location}));
           }
         }
-        console.log("moving right");
+        //console.log("[MOVE] " + this.name + " RIGHT");
         utils.sendConsole(JSON.stringify({"uuid": this.uuid,
                                           "move": direction,
                                           "top": this.location[1],
@@ -167,8 +169,6 @@ User.prototype.move = function (direction) {
     utils.sendConsole(JSON.stringify({"uuid": this.uuid,
                                       "turn": direction}));
   }
-
-  console.log(this.location);
 
 };
 
@@ -203,7 +203,7 @@ User.prototype.destroy = function () {
   utils.sendConsole(JSON.stringify({"type": "delete",
                                     "uuid": this.uuid}));
   delete Global.users[this.uuid];
-  console.log(this.uuid + " destroyed.");
+  console.log(("[DEST] " + this.uuid + " destroyed.").red);
 };
 
 exports.User = User;

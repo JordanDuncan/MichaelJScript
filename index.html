@@ -14,7 +14,8 @@
     var req = new XMLHttpRequest();
     req.open('GET', document.location, false);
     req.send(null);
-    var URL = req.getResponseHeader('Socket-Url');
+    //var URL = req.getResponseHeader('Socket-Url');
+    var URL = 'ws://127.0.0.1:9001';
 
     var beep = new Audio('audio/beep.wav');
     var strike = new Audio('audio/strike.wav');
@@ -29,14 +30,14 @@
 
     function direction(dir) {
         socket.send(JSON.stringify({"uuid": uuid, "type": "try_move", "direction": dir}));
-        
+
         //Put in sound here too
         navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
         if (navigator.vibrate) { //if ("vibrate" in navigator) {}
             navigator.vibrate(50);
         }
     }
-    
+
     function pad(num, size) {
       var s = num+"";
       while (s.length < size) s = "0" + s;
@@ -300,7 +301,7 @@
       display: none;
       background-color: #333;
     }
-    
+
     #tryagain {
       margin: 20px auto;
       width: 200px;
@@ -402,7 +403,7 @@
     $(function() {
       FastClick.attach(document.body);
     });
-    
+
     function clickedSprite(spriteID) {
         showStep2(spriteID);
     }
@@ -425,7 +426,7 @@
       sprite_id = spriteID.slice(-1);
       set_sprite(sprite_id);
       $('#spriteview').css('background-image', 'url(assets/sprites/' + sprite_id + '/down_still_noattack_' + sprite_id + '.png)');
-      
+
       $('#welcome_step1').fadeOut(300).delay(0.3).css('height',0);
       setTimeout(function(){
         $('#welcome_step2').fadeIn(300);
@@ -467,7 +468,7 @@
 
     function showMain(){
       $('#main').css('top', 0).fadeIn(300);
-      window.scrollTo(0,1) 
+      window.scrollTo(0,1)
     }
     function showDeath(){
       $('#deathScore').html($('#score').text());

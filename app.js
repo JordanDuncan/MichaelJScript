@@ -9,21 +9,22 @@ var Global = require('./js/global.js'),
     http = require('http'),
     url = require("url"),
     path = require("path"),
-    fs = require("fs");
+    fs = require("fs"),
+    colors = require("colors");
 
 var MAX_USERS = 20;
-var socketUrl = '';
+var socketUrl = 'ws://127.0.0.1:9001';
 
 // Hi everyone!
-console.log('\n   ===================================================\n');
-console.log('  #   #   #    #### #   #  #### #       #    #### #   #');
-console.log('  #   #  # #  #     #  #  #     #      # #  #     #   #');
-console.log('  #   #  # #  #     # #   #     #      # #  #     #   #');
-console.log('  ##### ##### #     ##     ###  #     #####  ###  #####');
-console.log('  #   # #   # #     # #       # #     #   #     # #   #');
-console.log('  #   # #   # #     #  #      # #     #   #     # #   #');
-console.log('  #   # #   #  #### #   # ####  ##### #   # ####  #   #');
-console.log('\n   ===================================================\n');
+console.log('\n   ===================================================   '.red);
+console.log('  █   █   █    ████ █   █  ████ █       █    ████ █   █  '.red);
+console.log('  █   █  █ █  █     █  █  █     █      █ █  █     █   █  '.red);
+console.log('  █   █  █ █  █     █ █   █     █      █ █  █     █   █  '.red);
+console.log('  █████ █████ █     ██     ███  █     █████  ███  █████  '.red);
+console.log('  █   █ █   █ █     █ █       █ █     █   █     █ █   █  '.red);
+console.log('  █   █ █   █ █     █  █      █ █     █   █     █ █   █  '.red);
+console.log('  █   █ █   █  ████ █   █ ████  █████ █   █ ████  █   █  '.red);
+console.log('   ===================================================   \n'.red);
 
 // Set up websocket server
 var socketServer = http.createServer(function (request, response) {
@@ -32,7 +33,7 @@ var socketServer = http.createServer(function (request, response) {
 });
 
 socketServer.listen(9001, function () {
-  console.log('[SETP] Websocket server live on port 9001');
+  console.log('[SETP] Websocket server live on port 9001'.green);
 });
 
 var wsServer = new WebSocketServer({
@@ -40,10 +41,10 @@ var wsServer = new WebSocketServer({
   autoAcceptConnections: false
 });
 
-var socketTunnel = localtunnel(9001, {'subdomain': 'guts2015ws'}, function(err, tunnel) {
+/*var socketTunnel = localtunnel(9001, {'subdomain': 'guts2015ws'}, function(err, tunnel) {
   socketUrl = 'ws' + tunnel.url.substring(5);
   console.log('[SETP] Websocket server public on ' + socketUrl);
-});
+});*/
 
 // Set up web server
 var webServer = http.createServer(function(request, response) {
@@ -69,7 +70,7 @@ var webServer = http.createServer(function(request, response) {
     if (fs.statSync(filename).isDirectory()) filename += '/index.html';
 
     fs.readFile(filename, "binary", function(err, file) {
-      if(err) {        
+      if(err) {
         response.writeHead(500, {"Content-Type": "text/plain"});
         response.write(err + "\n");
         response.end();
@@ -84,12 +85,12 @@ var webServer = http.createServer(function(request, response) {
 });
 
 webServer.listen(80, function () {
-  console.log('[SETP] Web server live on port 80');
+  console.log('[SETP] Web server live on port 80'.green);
 });
 
-var webTunnel = localtunnel(80, {'subdomain': 'guts2015'}, function(err, tunnel) {
+/*var webTunnel = localtunnel(80, {'subdomain': 'guts2015'}, function(err, tunnel) {
   console.log('[SETP] Web server public on ' + tunnel.url);
-});
+});*/
 
 function originIsAllowed() { return true; }
 
@@ -119,18 +120,18 @@ wsServer.on('request', function (request) {
     // too many users!
   }
 
-  console.log('[INFO] User Connecting...');
+  console.log('[INFO] User Connecting...'.yellow);
 
   var connection = request.accept('echo-protocol', request.origin);
   var new_user = new user.User(connection);
 
   connection.sendUTF(JSON.stringify({'uuid': new_user.uuid}));
   connection.uuid = new_user.uuid;
-  console.log("[INFO] User UUID Assigned, picking name...");
+  console.log(("[INFO] User " + new_user.uuid + ", picking name...").yellow);
 
   //console.log(Global.users);
 
-  console.log('[INFO] User Connection Accepted.');
+  //console.log('[INFO] User Connection Accepted.');
 
   connection.on('message', function (message) {
     if (message.type === 'utf8') {
@@ -138,12 +139,12 @@ wsServer.on('request', function (request) {
       try {
         cmd = JSON.parse(message.utf8Data);
       } catch (e) {
-        console.log("[ERRR] " + e);
+        console.log(("[ERRR] " + e).red);
         connection.sendUTF('Error: invalid JSON');
         cmd = {};
       }
 
-      console.log(cmd);
+      //console.log(cmd);
 
       setTimeout(function () {
         spawnPowerup();
@@ -163,11 +164,11 @@ wsServer.on('request', function (request) {
         break;
       case 'respawn':
         Global.users[cmd.uuid].set_location();
-        console.log('[INFO] ' + Global.users[cmd.uuid].name + ' respawned.')
+        console.log(('[INFO] ' + Global.users[cmd.uuid].name + ' respawned.').cyan);
         break;
       case 'set_name':
         Global.users[cmd.uuid].set_name(cmd.name);
-        console.log('[INFO] Hello ' + Global.users[cmd.uuid].name + '!')
+        console.log(('[NAME] Hello ' + Global.users[cmd.uuid].name + '!').cyan);
         break;
       case 'set_job':
         Global.users[cmd.uuid].set_job(cmd.job);
@@ -204,13 +205,14 @@ wsServer.on('request', function (request) {
           }
         } catch (e) {
           utils.sendConsole('oops');
-        }  
+        }
         if (victim) {
           // Victim's health goes down
           victim.health -= 1;
           // If health is zero, then send death and update user's score, otherwise send new health
           if (victim.health === 0) {
             //Send death here
+            console.log(('[ATTK] Bye bye ' + victim.name + '! ' + attackingUser.name + ' wins.').red);
             victim.socket.sendUTF(JSON.stringify({"score": victim.score,
                                 "health": victim.health}));
             victim.reset();
@@ -218,9 +220,10 @@ wsServer.on('request', function (request) {
             attackingUser.socket.sendUTF(JSON.stringify({"score": attackingUser.score}));
           } else {
              victim.socket.sendUTF(JSON.stringify({"health": victim.health}));
+             console.log(('[ATTK] ' + attackingUser.name + ' attacked ' + victim.name).red);
           }
         }
-        
+
         break;
       case 'get_info':
         Global.users[cmd.uuid].socket.sendUTF(JSON.stringify({"score": Global.users[cmd.uuid].score,
@@ -228,16 +231,16 @@ wsServer.on('request', function (request) {
       }
 
       // checks for json here
-      console.log('[RECV] ' + message.utf8Data);
+      //console.log('[RECV] ' + message.utf8Data);
       //connection.sendUTF(message.utf8Data + ' received!');
     }
     else if (message.type === 'binary') {
-      console.log('[RECV] Binary: ' + message.binaryData.length + ' bytes');
+      //console.log('[RECV] Binary: ' + message.binaryData.length + ' bytes');
       connection.sendBytes(message.binaryData);
     }
   });
   connection.on('close', function(reasonCode, description) {
-    console.log('[INFO] ' + connection.remoteAddress + ' disconnected.');
+    console.log('[INFO] ' + connection.remoteAddress + ' disconnected.'.red);
     if(Global.users[connection.uuid]) Global.users[connection.uuid].destroy();
   });
 });

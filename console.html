@@ -9,7 +9,7 @@
 
 
     <style type="text/css">
-    
+
         @font-face {
             font-family: '8bit_wondernominal';
             src: url('assets/8-bit_wonder-webfont.eot');
@@ -21,33 +21,33 @@
             font-weight: normal;
             font-style: normal;
         }
-    
+
         div#preload { display: none; }
-    
-        body { 
-            font-size: 15px; 
+
+        body {
+            font-size: 15px;
             font-family :sans-serif;
             background-image: url('assets/mapbackgroundnofence.png');
             background-repeat: repeat;
-            
+
         }
-        
-        h1 { 
+
+        h1 {
             font-size: 25px;
             font-weight: bold;
         }
-        
-        h2 { 
+
+        h2 {
             font-size: 20px;
             font-weight: bold;
         }
-        
+
         section {
             float: left;
             width: 70%;
             position: absolute;
         }
-            
+
         aside {
             font-family: '8bit_wondernominal';
             background-color: rgba(0, 0, 0, 0.6);
@@ -59,7 +59,7 @@
             padding-right: 10px;
             position: fixed, absolute;
         }
-            
+
         #titleRow {
             float: top;
             height: 20px;
@@ -69,7 +69,7 @@
             padding-bottom: 13px;
             border-bottom: 1px solid;
         }
-        
+
         #namesTable {
             float: top;
             height: 100%;
@@ -77,7 +77,7 @@
             color: #ffffff;
             padding: 3px;
         }
-        
+
         .tableRow {
             height: 40px;
             width: 300px;
@@ -91,7 +91,7 @@
             top: 0;
             left: 0;
         }
-        
+
         .right {
             height: 40px;
             width: 150px;
@@ -100,7 +100,7 @@
             top: 0;
             right: 0;
         }
-        
+
         #container {
             position: relative;
             width: 814px;
@@ -116,7 +116,7 @@
             width: 750px;
             position: absolute;
         }
-        
+
         .sprite {
             height: 5%;
             width: 5%;
@@ -124,46 +124,46 @@
             position: absolute;
             transition: left 0.5s, top 0.5s;
         }
-       
+
     </style>
 
 </head>
 
 <body>
-    
+
     <section id= "canvasWrapper">
-    
+
     <div id="container">
-        
+
         <div id="canvas"></div>
-        
+
         <audio loop id="audioTrack" preload="auto" oncanplaythrough="this.play();">
             <source src="audio/bg.mp3" type="audio/mpeg">
         </audio>
-        
+
     </div>
-        
+
     </section>
 
     <aside id="scoreboard">
         <div id="titleRow">
             <h1>High scores</h1>
         </div>
-        
+
         <div id="namesTable"></div>
 
-        <div style="width: 300px; position: absolute; bottom: 10px; right: 20px; text-align: right"><h1>mjs.ngrok.com</h1></div>
-        
+        <div style="width: 300px; position: absolute; bottom: 10px; right: 20px; text-align: center; font-family: 'HelveticaNeue'; font-size: 56px;"><h1>go to<br>mjs.ngrok.com<br>@ScottMax_<br>@JrdnDncn<br>@Aquaumbra</h1></div>
+
     </aside>
-    
+
     <script type="text/javascript">
         var c = 0;
         var socket;
-
+/*
         var req = new XMLHttpRequest();
         req.open('GET', document.location, false);
-        req.send(null);
-        var URL = req.getResponseHeader('Socket-Url');
+        req.send(null);*/
+        var URL = 'ws://127.0.0.1:9001';
 
         function newUser(user){
             var sprite = user.sprite;
@@ -175,14 +175,14 @@
             var spriteEle = document.getElementById('sprite'+user);
             spriteEle.remove();
         }
-        
+
         function updateBoard(scoreArray){
             //var scoreArray = [["abcdef", "9001"], ["catcat", "8999"], ["tabtab", "538"]]
 
             $('#namesTable').html('');
             for (var i=0; i < scoreArray.length; i++) {
                 $('#namesTable').append('<div class="tableRow"><div class="left">'+ scoreArray[i][0] +'</div><div class="right">'+ scoreArray[i][1] +'</div></div>')
-            }       
+            }
         }
 
         function spawnPowerup(location, type) {
@@ -223,7 +223,7 @@
             spriteEle.setAttribute('dir', 'up');
 
             spriteEle.style.backgroundImage = 'url(assets/sprites/'+sprite+'/up_llmove_noattack_'+sprite+'.png)';
-            
+
             setTimeout(function(){
                 spriteEle.style.backgroundImage = 'url(assets/sprites/'+sprite+'/up_still_noattack_'+sprite+'.png)';
                 setTimeout(function(){
@@ -282,12 +282,12 @@
                 },150);
             },150);
         }
-        
+
         function attack(spriteId){
             var spriteEle = document.getElementById('sprite'+spriteId);
             var sprite = spriteEle.getAttribute('sprite');
             var spriteDir = spriteEle.getAttribute('dir');
-            
+
             spriteEle.style.backgroundImage = 'url(assets/sprites/'+sprite+'/'+spriteDir+'_still_attack1_'+sprite+'.png)';
             setTimeout(function(){
                 spriteEle.style.backgroundImage = 'url(assets/sprites/'+sprite+'/'+spriteDir+'_still_attack2_'+sprite+'.png)';
@@ -299,10 +299,10 @@
                 },100);
             },100);
         }
-        
+
         window.onload = function() {
             updateBoard([]);
-            
+
             jArray = ["down", "left", "right", "up"];
         kArray = ["llmove", "rlmove", "still"];
         lArray = ["attack1", "attack2", "noattack"]
@@ -310,24 +310,24 @@
         for (var i = 0; i <= 9; i ++){
             for (var j = 0; j < jArray.length; j++) {
                 for (var k = 0; k < kArray.length; k++) {
-                    
+
                     if (kArray[k] == ("llmove" || "rlmove")) {
                         var imageSRC = "assets/sprites/"+i+"/"+jArray[j]+"_"+kArray[k]+"_noattack_"+i+".png";
                         var spriteImageName = "<img src=\"assets/sprites/"+i+"/"+jArray[j]+"_"+kArray[k]+"_noattack_"+i+".png\" width=\"1\" height=\"1\" alt=\"Image\"/>"
                         //console.log(i, j, k, l, imageSRC);
                         //$("#preload").append(spriteImageName);
-                        
+
                         var div = document.getElementById("preload");
                         //var content = document.createTextNode(spriteImageName);
-                        //div.appendChild(content);                   
-                        
+                        //div.appendChild(content);
+
                         var elem = document.createElement("img");
                         elem.setAttribute("src", imageSRC);
                         elem.setAttribute("height", "1");
                         elem.setAttribute("width", "1");
                         elem.setAttribute("alt", "Image");
                         div.appendChild(elem);
-                        
+
                         //elem.onload = function(){
                         //    console.log("Loaded "+ imageSRC);
                         //}
@@ -338,18 +338,18 @@
                             var spriteImageName = "<img src=\"assets/sprites/"+i+"/"+jArray[j]+"_still_"+lArray[l]+"_"+i+".png\" width=\"1\" height=\"1\" alt=\"Image\"/>"
                             //console.log(i, j, k, l, imageSRC);
                             //$("#preload").append(spriteImageName);
-                                                        
+
                             var div = document.getElementById("preload");
                             //var content = document.createTextNode(spriteImageName);
                             //div.appendChild(content);
-                            
+
                             var elem = document.createElement("img");
                             elem.setAttribute("src", imageSRC);
                             elem.setAttribute("height", "1");
                             elem.setAttribute("width", "1");
                             elem.setAttribute("alt", "Image");
                             div.appendChild(elem);
-                            
+
                             //elem.onload = function(){
                             //    console.log("Loaded "+ imageSRC);
                             //}
@@ -378,7 +378,7 @@
 
                 if (res.uuid) {
                   uuid = res.uuid;
-                  if (!auth) { 
+                  if (!auth) {
                     socket.send(JSON.stringify({"uuid": uuid, "type": "secret", "secret": "239668a2cf0991bc30347196cbadd50da8a9a6f7561ecf41d201884b4fac0151"}));
                     auth = true;
                    }
@@ -437,7 +437,7 @@
             });
         };
     </script>
-    
+
     <div id="preload">
     </div>
 
